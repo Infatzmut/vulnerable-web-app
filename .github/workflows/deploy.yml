@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+permissions:
+  security-events: write
 jobs:
   gitleaks:
     name: 🐛 Gitleaks Secret Scan
