@@ -8,10 +8,19 @@ jobs:
     name: Deploy Heroku
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      # - name: heroku login
+      #   uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+      #   with:
+      #     heroku_api_key: ${{ secrets.HEROKU_AUTH_TOKEN }}
+      #     heroku_app_name: "vulnerable-web-app" #Must be unique in Heroku
+      #     heroku_email: "fabrizzio1996@gmail.com"
+      #     justlogin: true
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_api_key: ${{ secrets.HEROKU_AUTH_TOKEN }}
           heroku_app_name: "vulnerable-web-app" #Must be unique in Heroku
           heroku_email: "fabrizzio1996@gmail.com"
-          remote_branch: "master"
+          branch: "master"
           usedocker: true

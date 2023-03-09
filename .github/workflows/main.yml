@@ -10,14 +10,14 @@ permissions:
   security-events: write
 jobs:
   security_sast:
-    uses: ./.github/workflows/sast-workflow.yaml
+    uses: ./.github/workflows/sast-workflow.yml
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   
   deploy_to_heroku:
-    uses: ./.github/workflows/deploy.yaml
+    uses: ./.github/workflows/deploy.yml
     needs: security_sast
-    
+
   # security_dast:
   #   uses: ./.github/workflows/dast-workflow.yml
   #   needs: deploy-heroku
