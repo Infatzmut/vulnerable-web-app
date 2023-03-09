@@ -1,0 +1,23 @@
+name: Deploy Vulnerable Application                                  # workflow name
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master   
+
+permissions:
+  security-events: write
+jobs:
+  security_sast:
+    uses: ./.github/workflows/sast-workflow.yaml
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  
+  deploy_to_heroku:
+    uses: ./.github/workflows/deploy.yaml
+    needs: security_sast
+    
+  # security_dast:
+  #   uses: ./.github/workflows/dast-workflow.yml
+  #   needs: deploy-heroku
