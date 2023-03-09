@@ -5,15 +5,85 @@ on:
     branches:
       - master
 jobs:
-  deploy-heroku:
-    name: Deploy Heroku
+  gitleaks:
+    name: 🐛 Gitleaks Secret Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+      - uses: actions/checkout@v3
         with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "app-vulnerable2022" #Must be unique in Heroku
-          heroku_email: "roxsrossve@gmail.com"
-          remote_branch: "master"
-          usedocker: true
+          fetch-depth: 0
+      - run: |
+          wget https://github.com/zricethezav/gitleaks/releases/download/v8.13.0/gitleaks_8.13.0_linux_x64.tar.gz && \
+          tar -xzf gitleaks_8.13.0_linux_x64.tar.gz && \
+          sudo install gitleaks /usr/bin && \
+          gitleaks detect --report-format sarif --report-path gitleaks.report
+        continue-on-error: true          
+      - name: Echo report
+        run: cat gitleaks.report
+      - name: Upload SARIF file for GitHub Advanced Security Dashboard
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: gitleaks.report   
+
+  semgrep:
+    name: 🐛 Semgrep Scan
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Run semgrep security scanner
+        continue-on-error: true
+        run: |
+          cat << 'EOF' | bash
+              semgrep ci --config=auto --sarif --output=semgrep.sarif --max-target-bytes=2MB
+              EXIT_CODE=$?
+              if [ "$EXIT_CODE" = "0" ] || [ "$EXIT_CODE" = "1" ]
+              then
+                exit 0
+              else
+                exit $EXIT_CODE
+              fi
+          EOF
+      - name: Upload SARIF file for GitHub Advanced Security Dashboard
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: semgrep.sarif 
+
+  snyk-code-sca:
+    name: 🐛 Snyk Code Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: >
+            --severity-threshold=high
+            --all-projects
+            --sarif-file-output=snyk-code.sarif
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk-code.sarif         
+  # deploy-heroku:
+  #   name: Deploy Heroku
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: SonarQube Scan
+  #       uses: kitabisa/sonarqube-action@v1.2.0
+  #       with:
+  #         host: ${{ secrets.SONARQUBE_HOST }}
+  #         login: ${{ secrets.SONARQUBE_TOKEN }}
+  #     - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+  #       with:
+  #         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+  #         heroku_app_name: "app-vulnerable2022" #Must be unique in Heroku
+  #         heroku_email: "roxsrossve@gmail.com"
+  #         remote_branch: "master"
+  #         usedocker: true
