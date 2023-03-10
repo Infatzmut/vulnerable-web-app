@@ -12,19 +12,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      # - name: heroku login
-      #   uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
-      #   with:
-      #     heroku_api_key: ${{ secrets.HEROKU_AUTH_TOKEN }}
-      #     heroku_app_name: "vulnerable-web-app" #Must be unique in Heroku
-      #     heroku_email: "fabrizzio1996@gmail.com"
-      #     justlogin: true
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "vulnerable-web-app" #Must be unique in Heroku
+          heroku_app_name: "vulnerable-wa-fabrizzio-aranda" #Must be unique in Heroku
           heroku_email: "fabrizzio1996@gmail.com"
           branch: "master"
           usedocker: true
