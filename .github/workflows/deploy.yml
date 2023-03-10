@@ -19,7 +19,7 @@ jobs:
       #     justlogin: true
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
-          heroku_api_key: ${{ secrets.HEROKU_AUTH_TOKEN }}
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: "vulnerable-web-app" #Must be unique in Heroku
           heroku_email: "fabrizzio1996@gmail.com"
           branch: "master"
