@@ -2,7 +2,9 @@ name: security_dast
 
 on:
   workflow_call:
-
+    secrets:
+      HEROKU_API_KEY:
+        required: true
 jobs:
   deploy-heroku:
     name: Deploy Heroku
@@ -18,6 +20,8 @@ jobs:
       #     heroku_email: "fabrizzio1996@gmail.com"
       #     justlogin: true
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: "vulnerable-web-app" #Must be unique in Heroku
