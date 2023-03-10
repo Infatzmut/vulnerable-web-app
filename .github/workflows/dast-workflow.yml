@@ -2,7 +2,7 @@ name: security_dast
 
 on:
   workflow_call:
-
+    
 jobs:
   zap_dast_scan:
     if: ${{ github.ref == 'refs/heads/master' }}
