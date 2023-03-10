@@ -20,6 +20,6 @@ jobs:
     secrets: 
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
-  # security_dast:
-  #   uses: ./.github/workflows/dast-workflow.yml
-  #   needs: deploy-heroku
+  security_dast:
+    uses: ./.github/workflows/dast-workflow.yml
+    needs: deploy_to_heroku
